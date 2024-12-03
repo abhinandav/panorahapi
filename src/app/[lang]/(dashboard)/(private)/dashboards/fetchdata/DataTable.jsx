@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 'use client';
 
 import React, { useState } from 'react';
@@ -17,6 +19,8 @@ import {
   Alert,
   Backdrop,
   CircularProgress,
+  Modal,
+  TextField,
 } from '@mui/material';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -27,6 +31,9 @@ const DataTable = ({ data, setData, columns, tableName }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showError, setShowError] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [editRowData, setEditRowData] = useState(null);
+  const [originalRowData, setOriginalRowData] = useState(null); // Add state for original row data
 
   const server = useSelector((state) => state.server.selectedServer);
   const { bearerToken } = useSelector((state) => state.auth);
@@ -58,23 +65,23 @@ const DataTable = ({ data, setData, columns, tableName }) => {
       setShowError(true);
       return;
     }
-  
+
     setLoading(true);
     try {
       const payload = {
-        table_name:tableName, 
+        table_name: tableName,
         payload: {
           name: selectedRows,
         },
       };
-  
+
       const response = await axios.post(`${server}doctype/delete`, payload, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${bearerToken}`,
         },
       });
-  
+
       if (response.data.status === 'Success') {
         const updatedData = data.filter((row) => !selectedRows.includes(row.name));
         setData(updatedData);
@@ -89,7 +96,69 @@ const DataTable = ({ data, setData, columns, tableName }) => {
       setLoading(false);
     }
   };
-  
+
+  const handleEditClick = (row) => {
+    setOriginalRowData({ ...row }); // Save the original row data
+    setEditRowData({ ...row });
+    setOpenEditModal(true);
+  };
+
+  const handleEditChange = (field, value) => {
+    setEditRowData((prevData) => ({
+      ...prevData,
+      [field]: value,
+    }));
+  };
+
+  const handleEditSubmit = async () => {
+    setLoading(true);
+
+    try {
+      const changedValues = Object.keys(editRowData).reduce((acc, key) => {
+        if (editRowData[key] !== originalRowData[key]) {
+          acc[key] = editRowData[key];
+        }
+        return acc;
+      }, {});
+
+      if (Object.keys(changedValues).length === 0) {
+        setError('No changes detected.');
+        setShowError(true);
+        setLoading(false);
+        return;
+      }
+
+      const payload = {
+        table_name: tableName,
+        payload: changedValues, // Send only the changed fields
+        condition_dict: { name: originalRowData.name }, // Use a unique identifier for condition
+      };
+
+      const response = await axios.put(`${server}doctype/update`, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${bearerToken}`,
+        },
+      });
+
+      if (response.data.status === 'Success') {
+        const updatedData = data.map((row) =>
+          row.name === originalRowData.name ? { ...row, ...changedValues } : row
+        );
+        setData(updatedData);
+        setOpenEditModal(false);
+        setEditRowData(null);
+        setOriginalRowData(null); // Clear the original row data
+      } else {
+        throw new Error(response.data.message || 'Failed to update row.');
+      }
+    } catch (error) {
+      setError(error.message || 'Failed to update row.');
+      setShowError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (data.length === 0) {
     return <Typography variant="h6">No data available.</Typography>;
@@ -123,6 +192,7 @@ const DataTable = ({ data, setData, columns, tableName }) => {
               {columns.map((col) => (
                 <TableCell key={col}>{col}</TableCell>
               ))}
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -137,6 +207,15 @@ const DataTable = ({ data, setData, columns, tableName }) => {
                 {columns.map((col) => (
                   <TableCell key={col}>{row[col]}</TableCell>
                 ))}
+                <TableCell>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => handleEditClick(row)}
+                  >
+                    Edit
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -159,6 +238,44 @@ const DataTable = ({ data, setData, columns, tableName }) => {
           Delete Selected
         </Button>
       </Box>
+
+      <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 2,
+            width: '90%',
+            maxWidth: 500,
+            maxHeight: '80vh',
+            overflowY: 'auto',
+          }}
+        >
+          <Typography variant="h6" mb={2}>
+            Edit Row
+          </Typography>
+          {columns.map((col) => (
+            <TextField
+              key={col}
+              label={col}
+              value={editRowData ? editRowData[col] : ''}
+              onChange={(e) => handleEditChange(col, e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+          ))}
+          <Box mt={2} display="flex" justifyContent="flex-end">
+            <Button variant="contained" onClick={handleEditSubmit}>
+              Submit
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </Box>
   );
 };

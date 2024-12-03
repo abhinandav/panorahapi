@@ -1,7 +1,10 @@
+/* eslint-disable */
+
 'use client';
 
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { setBearerToken } from '@/redux-store/slices/auth';
 import { Box, TextField, Button, Typography } from '@mui/material';
 

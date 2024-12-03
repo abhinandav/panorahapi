@@ -69,6 +69,7 @@ const schema = object({
 })
 
 const Login = ({ mode }) => {
+  
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [errorState, setErrorState] = useState(null)
@@ -96,10 +97,6 @@ const Login = ({ mode }) => {
     formState: { errors }
   } = useForm({
     resolver: valibotResolver(schema),
-    // defaultValues: {
-    //   username: 'administrator',
-    //   password: 'Nike@123'
-    // }
   })
 
   const characterIllustration = useImageVariant(
@@ -122,7 +119,6 @@ const Login = ({ mode }) => {
     if (res && res.ok && res.error === null) {
       
       const redirectURL = searchParams.get('redirectTo') ?? '/'
-      console.log(redirectURL);
 
 
       router.replace(getLocalizedUrl(redirectURL, locale))

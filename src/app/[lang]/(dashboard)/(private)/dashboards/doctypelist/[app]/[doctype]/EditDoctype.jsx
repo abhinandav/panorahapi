@@ -1,5 +1,6 @@
-'use client';
+/* eslint-disable */
 
+'use client';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';

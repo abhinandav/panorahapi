@@ -44,51 +44,50 @@ const renderChat = props => {
     const isChatActive = chatStore.activeUser?.id === contact.id
 
     return (
-      // <li
-      //   key={chat.id}
-      //   className={classnames('flex items-start gap-4 pli-3 plb-2 cursor-pointer rounded mbe-1', {
-      //     'bg-primary shadow-primarySm': isChatActive,
-      //     'text-[var(--mui-palette-primary-contrastText)]': isChatActive
-      //   })}
-      //   onClick={() => {
-      //     getActiveUserData(chat.userId)
-      //     isBelowMdScreen && setSidebarOpen(false)
-      //     isBelowMdScreen && backdropOpen && setBackdropOpen(false)
-      //   }}
-      // >
-      //   <AvatarWithBadge
-      //     src={contact.avatar}
-      //     isChatActive={isChatActive}
-      //     alt={contact.fullName}
-      //     badgeColor={statusObj[contact.status]}
-      //     color={contact.avatarColor}
-      //   />
-      //   <div className='min-is-0 flex-auto'>
-      //     <Typography color='inherit'>{contact?.fullName}</Typography>
-      //     {chat.chat.length ? (
-      //       <Typography variant='body2' color={isChatActive ? 'inherit' : 'text.secondary'} className='truncate'>
-      //         {chat.chat[chat.chat.length - 1].message}
-      //       </Typography>
-      //     ) : (
-      //       <Typography variant='body2' color={isChatActive ? 'inherit' : 'text.secondary'} className='truncate'>
-      //         {contact.role}
-      //       </Typography>
-      //     )}
-      //   </div>
-      //   <div className='flex flex-col items-end justify-start'>
-      //     <Typography
-      //       variant='body2'
-      //       color='inherit'
-      //       className={classnames('truncate', {
-      //         'text-textDisabled': !isChatActive
-      //       })}
-      //     >
-      //       {chat.chat.length ? formatDateToMonthShort(chat.chat[chat.chat.length - 1].time) : null}
-      //     </Typography>
-      //     {chat.unseenMsgs > 0 ? <CustomChip round='true' label={chat.unseenMsgs} color='error' size='small' /> : null}
-      //   </div>
-      // </li>
-      <>dasdas</>
+      <li
+        key={chat.id}
+        className={classnames('flex items-start gap-4 pli-3 plb-2 cursor-pointer rounded mbe-1', {
+          'bg-primary shadow-primarySm': isChatActive,
+          'text-[var(--mui-palette-primary-contrastText)]': isChatActive
+        })}
+        onClick={() => {
+          getActiveUserData(chat.userId)
+          isBelowMdScreen && setSidebarOpen(false)
+          isBelowMdScreen && backdropOpen && setBackdropOpen(false)
+        }}
+      >
+        <AvatarWithBadge
+          src={contact.avatar}
+          isChatActive={isChatActive}
+          alt={contact.fullName}
+          badgeColor={statusObj[contact.status]}
+          color={contact.avatarColor}
+        />
+        <div className='min-is-0 flex-auto'>
+          <Typography color='inherit'>{contact?.fullName}</Typography>
+          {chat.chat.length ? (
+            <Typography variant='body2' color={isChatActive ? 'inherit' : 'text.secondary'} className='truncate'>
+              {chat.chat[chat.chat.length - 1].message}
+            </Typography>
+          ) : (
+            <Typography variant='body2' color={isChatActive ? 'inherit' : 'text.secondary'} className='truncate'>
+              {contact.role}
+            </Typography>
+          )}
+        </div>
+        <div className='flex flex-col items-end justify-start'>
+          <Typography
+            variant='body2'
+            color='inherit'
+            className={classnames('truncate', {
+              'text-textDisabled': !isChatActive
+            })}
+          >
+            {chat.chat.length ? formatDateToMonthShort(chat.chat[chat.chat.length - 1].time) : null}
+          </Typography>
+          {chat.unseenMsgs > 0 ? <CustomChip round='true' label={chat.unseenMsgs} color='error' size='small' /> : null}
+        </div>
+      </li>
     )
   })
 }

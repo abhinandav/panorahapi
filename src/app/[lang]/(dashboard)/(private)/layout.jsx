@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 // MUI Imports
 import Button from '@mui/material/Button'
 

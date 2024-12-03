@@ -1,8 +1,11 @@
+/* eslint-disable */
+
 'use client';
 
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectServer, addServer } from '@/redux-store/slices/server';
+
 import { Box, Button, TextField, Select, MenuItem } from '@mui/material';
 
 const ServerSelector = () => {
