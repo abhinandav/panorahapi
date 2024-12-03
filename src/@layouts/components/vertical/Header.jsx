@@ -11,6 +11,7 @@ import { useSettings } from '@core/hooks/useSettings'
 
 // Util Imports
 import { verticalLayoutClasses } from '@layouts/utils/layoutClasses'
+import StyledFooter from '@layouts/styles/vertical/StyledFooter'
 
 // Styled Component Imports
 const Footer = props => {
