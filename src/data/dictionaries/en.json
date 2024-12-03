@@ -1,0 +1,19 @@
+{
+    "navigation": {
+        "dashboards": "Dashboards",
+        "createdoctype": "Create Doctype",
+        "insertdata": "Insert Data",
+        "fetchdata": "Fetch Data",
+        "fetchdataid": "Fetch Data by ID",
+        "deletedoc": "Delete Document",
+        "updatedoc": "Update Document",
+        "fileupload": "Upload Files",
+        "getmetadata": "Get Metadata",
+        "filterdata": "Filter Data",
+        "addcolumn": "Add Column",
+        "deletecolumn": "Delete Column",
+        "renamecolumn": "Rename Column",
+        "doctypelist": "Doctype List",
+        "docdetails": "docdetails"
+    }
+}

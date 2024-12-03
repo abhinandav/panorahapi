@@ -1,0 +1,6 @@
+const ComponentName = () => {
+  return (
+    nshd
+  )
+}
+
