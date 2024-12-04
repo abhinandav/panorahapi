@@ -16,7 +16,7 @@ import { i18n } from '@configs/i18n'
 import '@/app/globals.css'
 
 // Generated Icon CSS Imports
-import '@/assets/iconify-icons/generated-icons.css'
+// import '@/assets/iconify-icons/generated-icons.css'
 
 export const metadata = {
   title: 'Vuexy - MUI Next.js Admin Dashboard Template',
