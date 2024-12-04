@@ -88,7 +88,13 @@ const CreateDoctype = () => {
   const fetchApps = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(`${selectedServer}/execute`, { fn: 'get_apps' });
+      const response = await axios.post(`${selectedServer}/execute`, { fn: 'get_apps' },
+        {
+          headers: {
+            Authorization: `Bearer ${bearerToken}`,
+          },
+        }
+      );
       if (response.data && Array.isArray(response.data.result)) {
         setApps(response.data.result);
       } else {
@@ -147,7 +153,13 @@ const CreateDoctype = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(`${selectedServer}/document`, form);
+      const response = await axios.post(`${selectedServer}/document`, form,
+        {
+          headers: {
+            Authorization: `Bearer ${bearerToken}`,
+          },
+        }
+      );
       console.log(response);
       console.log(response.data);
       console.log(response.data.status);
