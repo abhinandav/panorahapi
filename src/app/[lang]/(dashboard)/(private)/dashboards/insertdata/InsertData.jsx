@@ -20,7 +20,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 const InsertField = () => {
   const server = useSelector((state) => state.server.selectedServer);
-  const { bearerToken } = useSelector((state) => state.auth);
+  const bearerToken  = localStorage.getItem('authToken')
+  
 
   const [formData, setFormData] = useState({
     table_name: '',

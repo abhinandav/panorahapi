@@ -72,6 +72,7 @@ const UserDropdown = () => {
 
   const handleUserLogout = async () => {
     try {
+      localStorage.clear()
       await signOut('\login ')
     } catch (error) {
       console.error(error)

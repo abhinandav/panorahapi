@@ -7,7 +7,7 @@ const Footer = () => {
   return (
     <>
     <HeaderServer/>
-    <HeaderToken/>
+    {/* <HeaderToken/> */}
     <hr style={{marginTop:"10", color:"white"}}/>
     </>
   )

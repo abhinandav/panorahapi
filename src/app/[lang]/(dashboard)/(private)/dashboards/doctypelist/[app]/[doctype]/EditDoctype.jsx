@@ -45,7 +45,8 @@ const EditDoctype = ({ app, doctype }) => {
 
   
   const server = useSelector((state) => state.server.selectedServer);
-  const { bearerToken } = useSelector((state) => state.auth);
+  const bearerToken  = localStorage.getItem('authToken')
+
 
   const fieldTypes = [
     'Data',

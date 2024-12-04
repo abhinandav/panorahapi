@@ -36,7 +36,8 @@ const DataTable = ({ data, setData, columns, tableName }) => {
   const [originalRowData, setOriginalRowData] = useState(null); // Add state for original row data
 
   const server = useSelector((state) => state.server.selectedServer);
-  const { bearerToken } = useSelector((state) => state.auth);
+  const bearerToken  = localStorage.getItem('authToken')
+
 
   const handleSelectRow = (rowName) => {
     setSelectedRows((prevSelected) =>

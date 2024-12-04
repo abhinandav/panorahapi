@@ -36,9 +36,9 @@ const CreateDoctype = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showError, setShowError] = useState(false);
-
+  
   const selectedServer = useSelector((state) => state.server.selectedServer);
-  const { bearerToken } = useSelector((state) => state.auth);
+  const bearerToken  = localStorage.getItem('authToken')
 
   const [form, setForm] = useState({
     app: '',

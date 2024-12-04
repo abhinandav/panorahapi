@@ -33,7 +33,8 @@ const FetchData = () => {
   const [showError, setShowError] = useState(false);
 
   const server = useSelector((state) => state.server.selectedServer);
-  const { bearerToken } = useSelector((state) => state.auth);
+  const bearerToken  = localStorage.getItem('authToken')
+
 
   const handleTableNameChange = (e) => setTableName(e.target.value);
 
@@ -75,7 +76,7 @@ const FetchData = () => {
       setShowError(true);
       return;
     }
-
+    
     setLoading(true);
     try {
       const response = await axios.post(
