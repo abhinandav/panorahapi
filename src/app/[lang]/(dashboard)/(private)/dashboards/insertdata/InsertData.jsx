@@ -120,7 +120,10 @@ const InsertField = () => {
       console.log(`${pair[0]}:`, pair[1]);
     }
   
+
+
     try {
+      console.log(formData);
       const response = await axios.post(
         `${server}/doctype/bulk_insert?app=${bulkForm.appname}&doctype_name=${bulkForm.doctype_name}`, formData, {
         headers: {

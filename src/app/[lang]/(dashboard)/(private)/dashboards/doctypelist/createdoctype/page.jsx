@@ -36,6 +36,8 @@ const CreateDoctype = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showError, setShowError] = useState(false);
+  const [fieldTypes,setFieldType] = useState([])
+
   
   const selectedServer = useSelector((state) => state.server.selectedServer);
   const bearerToken  = localStorage.getItem('authToken')
@@ -50,41 +52,6 @@ const CreateDoctype = () => {
     fields: [{ name: '', field_type: 'Data', label: '', permlevel: 0, options: null }],
   });
 
-  const fieldTypes = [
-    'Data',
-    'Text',
-    'Autocomplete',
-    'Attach',
-    'AttachImage',
-    'Barcode',
-    'Check',
-    'Code',
-    'Color',
-    'Currency',
-    'Date',
-    'Datetime',
-    'Duration',
-    'DynamicLink',
-    'Float',
-    'HTMLEditor',
-    'Int',
-    'JSON',
-    'Link',
-    'LongText',
-    'MarkdownEditor',
-    'Password',
-    'Percent',
-    'Phone',
-    'ReadOnly',
-    'Rating',
-    'Select',
-    'SmallText',
-    'TextEditor',
-    'Time',
-    'Table',
-    'TableMultiSelect',
-  ];
-
   const fetchApps = async () => {
     setLoading(true);
     try {
@@ -95,6 +62,8 @@ const CreateDoctype = () => {
           },
         }
       );
+      console.log(response.data.result);
+      
       if (response.data && Array.isArray(response.data.result)) {
         setApps(response.data.result);
       } else {
@@ -108,6 +77,29 @@ const CreateDoctype = () => {
     }
   };
 
+  const fetch_datatypes = async () => {
+    try {
+      const response = await axios.post(`${selectedServer}/execute`, { fn: 'display_all_field_types' },
+        {
+          headers: {
+            Authorization: `Bearer ${bearerToken}`,
+          },
+        }
+      );
+      if (response.data && Array.isArray(response.data.result)) {
+        setFieldType(response.data.result);
+      } else {
+        throw new Error('API response is not in the expected format');
+      }
+    } catch (err) {
+      setError(err.message || 'Error fetching apps');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  
+
 
   useEffect(() => {
     if (!selectedServer) {
@@ -116,6 +108,7 @@ const CreateDoctype = () => {
       return;
     }
     fetchApps();
+    fetch_datatypes();
   }, [selectedServer,bearerToken]);
   
 
@@ -210,7 +203,7 @@ const CreateDoctype = () => {
                   Select or Enter an App
                 </MenuItem>
                 {apps.map((app, index) => (
-                  <MenuItem key={index} value={app}>
+                  <MenuItem key={index} value={app.id || app.name}>
                     {app}
                   </MenuItem>
                 ))}

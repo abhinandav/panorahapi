@@ -35,6 +35,7 @@ const EditDoctype = ({ app, doctype }) => {
   const [operationLoading, setOperationLoading] = useState(false);
   const [error, setError] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [fieldTypes,setFieldType] = useState([])
   const [newField, setNewField] = useState({
     name: '',
     field_type: 'Data',
@@ -48,40 +49,7 @@ const EditDoctype = ({ app, doctype }) => {
   const bearerToken  = localStorage.getItem('authToken')
 
 
-  const fieldTypes = [
-    'Data',
-    'Text',
-    'Autocomplete',
-    'Attach',
-    'AttachImage',
-    'Barcode',
-    'Check',
-    'Code',
-    'Color',
-    'Currency',
-    'Date',
-    'Datetime',
-    'Duration',
-    'DynamicLink',
-    'Float',
-    'HTMLEditor',
-    'Int',
-    'JSON',
-    'Link',
-    'LongText',
-    'MarkdownEditor',
-    'Password',
-    'Percent',
-    'Phone',
-    'ReadOnly',
-    'Rating',
-    'Select',
-    'SmallText',
-    'TextEditor',
-    'Time',
-    'Table',
-    'TableMultiSelect',
-  ];
+
 
   useEffect(() => {
     if (!app || !doctype) {
@@ -111,8 +79,34 @@ const EditDoctype = ({ app, doctype }) => {
       }
     };
 
+    const fetch_datatypes = async () => {
+      try {
+        const response = await axios.post(`${server}/execute`, { fn: 'display_all_field_types' },
+          {
+            headers: {
+              Authorization: `Bearer ${bearerToken}`,
+            },
+          }
+        );
+        if (response.data && Array.isArray(response.data.result)) {
+          setFieldType(response.data.result);
+        } else {
+          throw new Error('API response is not in the expected format');
+        }
+      } catch (err) {
+        setError(err.message || 'Error fetching apps');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
     fetchMetadata();
+    fetch_datatypes()
   }, [app, doctype,bearerToken, server]);
+
+
+  console.log(fieldTypes);
+  
 
   const handleFieldChange = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
