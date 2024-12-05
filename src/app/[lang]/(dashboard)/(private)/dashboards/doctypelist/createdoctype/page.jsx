@@ -110,8 +110,14 @@ const CreateDoctype = () => {
     fetchApps();
     fetch_datatypes();
   }, [selectedServer,bearerToken]);
-  
 
+
+  const transformedApps = apps.map(app => {
+    const [displayName, metadata] = Object.entries(app)[0];
+    return { displayName, value: metadata.name };
+  });
+  
+  
   const handleCheckboxChange = (key) => {
     setForm((prev) => ({
       ...prev,
@@ -190,7 +196,7 @@ const CreateDoctype = () => {
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <Box sx={{ position: 'relative' }}>
-              <Select
+              {/* <Select
                 value={form.app}
                 onChange={(e) => handleFieldChange('app', e.target.value)}
                 variant="outlined"
@@ -207,7 +213,26 @@ const CreateDoctype = () => {
                     {app}
                   </MenuItem>
                 ))}
+              </Select> */}
+              <Select
+                value={form.app}
+                onChange={(e) => handleFieldChange('app', e.target.value)}
+                variant="outlined"
+                fullWidth
+                displayEmpty
+                required
+                sx={{ marginBottom: '8px' }}
+              >
+                <MenuItem value="" disabled>
+                  Select or Enter an App
+                </MenuItem>
+                {transformedApps.map((app, index) => (
+                  <MenuItem key={index} value={app.value}>
+                    {app.displayName}
+                  </MenuItem>
+                ))}
               </Select>
+
               <TextField
                 value={form.app}
                 onChange={(e) => handleFieldChange('app', e.target.value)}
