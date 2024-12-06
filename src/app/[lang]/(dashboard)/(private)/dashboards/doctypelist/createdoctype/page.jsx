@@ -114,7 +114,7 @@ const CreateDoctype = () => {
 
   const transformedApps = apps.map(app => {
     const [displayName, metadata] = Object.entries(app)[0];
-    return { displayName, value: metadata.name };
+    return { displayName, value: metadata.name.toLowerCase() };
   });
   
   
