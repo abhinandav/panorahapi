@@ -101,9 +101,13 @@ const InsertField = () => {
           Authorization: `Bearer ${bearerToken}`,
         },
       });
-      setResponseData(response.data);
+      if (response.data.status === "Success") {
+        setPayloadEntries([{ key: '', value: '' }])
+        alert("Data Inserted")
+      }
     } catch (error) {
       console.error(error);
+      alert(error)
     } finally {
       setLoading(false);
     }
