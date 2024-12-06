@@ -98,9 +98,6 @@ const CreateDoctype = () => {
     }
   };
 
-  
-
-
   useEffect(() => {
     if (!selectedServer) {
       setError('No server selected!');
@@ -112,10 +109,10 @@ const CreateDoctype = () => {
   }, [selectedServer,bearerToken]);
 
 
-  const transformedApps = apps.map(app => {
-    const [displayName, metadata] = Object.entries(app)[0];
-    return { displayName, value: metadata.name.toLowerCase() };
-  });
+  // const transformedApps = apps.map(app => {
+  //   const [displayName, metadata] = Object.entries(app)[0];
+  //   return { displayName, value: metadata.name.toLowerCase() };
+  // });
   
   
   const handleCheckboxChange = (key) => {
@@ -196,7 +193,7 @@ const CreateDoctype = () => {
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <Box sx={{ position: 'relative' }}>
-              {/* <Select
+              <Select
                 value={form.app}
                 onChange={(e) => handleFieldChange('app', e.target.value)}
                 variant="outlined"
@@ -213,8 +210,8 @@ const CreateDoctype = () => {
                     {app}
                   </MenuItem>
                 ))}
-              </Select> */}
-              <Select
+              </Select>
+              {/* <Select
                 value={form.app}
                 onChange={(e) => handleFieldChange('app', e.target.value)}
                 variant="outlined"
@@ -231,7 +228,7 @@ const CreateDoctype = () => {
                     {app.displayName}
                   </MenuItem>
                 ))}
-              </Select>
+              </Select> */}
 
               <TextField
                 value={form.app}
