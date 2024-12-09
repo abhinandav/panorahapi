@@ -187,38 +187,9 @@ const CreateDoctype = () => {
       <Box sx={{ padding: '16px' }}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
-            {/* <Box sx={{ position: 'relative' }}>
-              <Select
-                value={form.app}
-                onChange={(e) => handleFieldChange('app', e.target.value)}
-                variant="outlined"
-                fullWidth
-                displayEmpty
-                required
-                sx={{ marginBottom: '8px' }}
-              >
-                <MenuItem value="" disabled>
-                  Select or Enter an App
-                </MenuItem>
-                {apps.map((app, index) => (
-                  <MenuItem key={index} value={app.id || app.name}>
-                    {app}
-                  </MenuItem>
-                ))}
-              </Select>
-
-              <TextField
-                value={form.app}
-                onChange={(e) => handleFieldChange('app', e.target.value)}
-                label="Enter New App"
-                variant="outlined"
-                fullWidth
-                sx={{ marginTop: '8px' }}
-              />
-            </Box> */}
             <Box sx={{ position: 'relative' }}>
               <Select
-                value={form.app} // Synchronize with form.app
+                value={form.app} 
                 onChange={(e) => handleFieldChange('app', e.target.value)} // Update form.app when dropdown changes
                 variant="outlined"
                 fullWidth

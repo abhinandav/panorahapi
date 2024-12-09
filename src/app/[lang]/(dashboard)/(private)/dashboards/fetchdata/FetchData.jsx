@@ -88,9 +88,11 @@ const FetchData = () => {
       );
 
       if (response.data.status === 'Success') {
-        setData(response.data.data);
-        if (response.data.data.length > 0) {
-          setColumns(Object.keys(response.data.data[0]));
+        // Extract fetched_data
+        const fetchedData = response.data.data[0]?.fetched_data || [];
+        setData(fetchedData);
+        if (fetchedData.length > 0) {
+          setColumns(Object.keys(fetchedData[0])); // Use keys of first object as columns
         }
       } else {
         throw new Error(response.data.message || 'Failed to fetch data');

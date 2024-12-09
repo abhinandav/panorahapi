@@ -39,9 +39,7 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
   const ScrollWrapper = isBreakpointReached ? 'div' : PerfectScrollbar
 
   return (
-    
-    /* Custom scrollbar instead of browser scroll, remove if you want browser scroll only */
-    <ScrollWrapper
+        <ScrollWrapper
       {...(isBreakpointReached
         ? {
             className: 'bs-full overflow-y-auto overflow-x-hidden',
@@ -59,14 +57,14 @@ const VerticalMenu = ({ dictionary, scrollMenu }) => {
         renderExpandedMenuItemIcon={{ icon: <i className='tabler-circle text-xs' /> }}
         menuSectionStyles={menuSectionStyles(verticalNavOptions, theme)}
       >
-        <SubMenu
+        {/* <SubMenu
           label={dictionary['navigation'].dashboards}
           icon={<i className='tabler-smart-home' />}
-        >
+        > */}
           <MenuItem href={`/${locale}/dashboards/doctypelist`}>Dotype List</MenuItem>
-          <MenuItem href={`/${locale}/dashboards/insertdata`}>Insert Data</MenuItem>
-          <MenuItem href={`/${locale}/dashboards/fetchdata`}>Fetch Data</MenuItem>
-        </SubMenu>
+          {/* <MenuItem href={`/${locale}/dashboards/insertdata`}>Insert Data</MenuItem> */}
+          {/* <MenuItem href={`/${locale}/dashboards/fetchdata`}>Fetch Data</MenuItem> */}
+        {/* </SubMenu> */}
       </Menu>
     </ScrollWrapper>
   )

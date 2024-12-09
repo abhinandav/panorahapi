@@ -72,11 +72,15 @@ const DoctypeListComponent = ({ searchTerm }) => {
   };
 
   // Filter doctypes based on the search term
-  const filteredDoctypes = doctypes.filter(
-    (doctype) =>
-      doctype.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doctype.app.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredDoctypes = doctypes.filter((doctype) => {
+    const name = doctype?.name?.toLowerCase() || ""; 
+    const app = doctype?.app?.toLowerCase() || "";   
+  
+    return (
+      name.includes(searchTerm.toLowerCase()) ||
+      app.includes(searchTerm.toLowerCase())
+    );
+  });
 
   return (
     <>
