@@ -34,6 +34,8 @@ const DoctypeListComponent = ({ searchTerm }) => {
   const bearerToken  = localStorage.getItem('authToken')
   const fetchDoctypes = async () => {
     setLoading(true);
+    console.log('workinggg');
+    
     try {
       const response = await axios.post(
         `${server}execute`,
@@ -47,6 +49,8 @@ const DoctypeListComponent = ({ searchTerm }) => {
 
       if (response.data && Array.isArray(response.data.result)) {
         setDoctypes(response.data.result);
+        console.log('fetched.........');
+        
       } else {
         throw new Error('API response is not in the expected format');
       }
@@ -61,7 +65,7 @@ const DoctypeListComponent = ({ searchTerm }) => {
 
   useEffect(() => {
     fetchDoctypes();
-  }, [server, bearerToken]);
+  }, [server]);
 
   const handleNavigate = (appName, doctypeName) => {
     router.push(`/dashboards/doctypelist/${appName}/${doctypeName}`);

@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import BackButton from '../../../BackButton';
 
 const InsertField = ({ app, doctype }) => {
   const server = useSelector((state) => state.server.selectedServer);
@@ -131,11 +132,12 @@ const InsertField = ({ app, doctype }) => {
 
   return (
     <>
-    <form onSubmit={handleSubmit}>
+    <BackButton route={`/dashboards/doctypelist/${app}/${doctype}`}/>
+    <form onSubmit={handleSubmit} style={{marginTop:40}}>
       <Grid container spacing={2}>
         {payloadEntries.map((entry, index) => (
           <Grid container spacing={2} key={index} alignItems="center">
-            <Grid item xs={5}>
+            <Grid item xs={5} style={{marginTop:10}}>
               <TextField
                 fullWidth
                 label="Key"
@@ -144,7 +146,7 @@ const InsertField = ({ app, doctype }) => {
                 required
               />
             </Grid>
-            <Grid item xs={5}>
+            <Grid item xs={5} style={{marginTop:10}}>
               <TextField
                 fullWidth
                 label="Value"

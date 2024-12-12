@@ -24,12 +24,16 @@ import {
   CircularProgress,
   Menu,
   MenuItem,
+  Select,
+  FormControl,
+  InputLabel
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Checkbox } from '@mui/material';
 import { patch } from '@mui/material';
+import BackButton from '../../BackButton';
 
 const EditDoctype = ({ app, doctype }) => {
   const router = useRouter();
@@ -60,27 +64,25 @@ const EditDoctype = ({ app, doctype }) => {
 
 
 
-
-  const fetchMetadata = async () => {
-    try {
-      const response = await axios.get(`${server}doctype/${app}/${doctype}/getjson`, {
-        headers: {
-          Authorization: `Bearer ${bearerToken}`,
-        },
-      });
-      const metadata = response.data;
-      setForm({
-        ...metadata,
-        fields: metadata.data.fields || [],
-      });
-    } catch (err) {
-      setError('Failed to fetch metadata.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(()=>{
+    const fetchMetadata = async () => {
+      try {
+        const response = await axios.get(`${server}doctype/${app}/${doctype}/getjson`, {
+          headers: {
+            Authorization: `Bearer ${bearerToken}`,
+          },
+        });
+        const metadata = response.data;
+        setForm({
+          ...metadata,
+          fields: metadata.data.fields || [],
+        });
+      } catch (err) {
+        setError('Failed to fetch metadata.');
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchMetadata()
   },[server])
 
@@ -288,11 +290,15 @@ const EditDoctype = ({ app, doctype }) => {
     }
     setDeleteLoading(true);
     try {
-      const response = await axios.delete(`${server}/document/delete/${doctype}`, {
-        headers: {
-          Authorization: `Bearer ${bearerToken}`,
-        },
-      });
+      const response = await axios.delete(`${server}/document/delete`,
+        {
+          headers: {
+            Authorization: `Bearer ${bearerToken}`,
+          },
+          params: {
+            table_name: doctype,
+          },
+        });
 
       if (response.status === 200) {
         alert(`DocType '${doctype}' deleted successfully.`);
@@ -331,6 +337,8 @@ const EditDoctype = ({ app, doctype }) => {
   if (error) return <p>{error}</p>;
 
   return (
+  <>
+    <BackButton route={"/dashboards/doctypelist"} />
     <Box sx={{ padding: '16px' }}>
        <Grid container spacing={2} alignItems="center" style={{ marginBottom: '24px' }}>
             <Grid item xs={6}>
@@ -409,7 +417,7 @@ const EditDoctype = ({ app, doctype }) => {
               <TableCell>Label</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Field Type</TableCell>
-              <TableCell>Perm Level</TableCell>
+              {/* <TableCell>Perm Level</TableCell> */}
               <TableCell>Options</TableCell>
               <TableCell>Action</TableCell>
             </TableRow>
@@ -433,13 +441,6 @@ const EditDoctype = ({ app, doctype }) => {
                 <TableCell>
                   <TextField
                     value={field.field_type || 'Data'}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  <TextField
-                    type="number"
-                    value={field.permlevel}
                     size="small"
                   />
                 </TableCell>
@@ -500,56 +501,63 @@ const EditDoctype = ({ app, doctype }) => {
         </Box>
       </Box>
 
-
       <Modal open={openModal} onClose={handleCloseModal}>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            bgcolor: 'background.paper',
-            p: 4,
-            boxShadow: 24,
-            borderRadius: 2,
-          }}
-        >
-          <Typography variant="h6" mb={2}>
-            Add New Field
-          </Typography>
-          <TextField
-            label="Name"
-            value={newField.name}
-            onChange={(e) => handleNewFieldChange('name', e.target.value)}
-            fullWidth
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Label"
-            value={newField.label}
-            onChange={(e) => handleNewFieldChange('label', e.target.value)}
-            fullWidth
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Field Type"
-            value={newField.field_type}
-            onChange={(e) => handleNewFieldChange('field_type', e.target.value)}
-            fullWidth
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Options"
-            value={newField.options}
-            onChange={(e) => handleNewFieldChange('options', e.target.value)}
-            fullWidth
-            sx={{ mb: 2 }}
-          />
-          <Button variant="contained" onClick={handleAddField} fullWidth disabled={operationLoading}>
-            {operationLoading ? <CircularProgress size={20} sx={{ color: 'inherit' }} /> : 'Add Field'}
-          </Button>
-        </Box>
-      </Modal>
+  <Box
+    sx={{
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      bgcolor: 'background.paper',
+      p: 4,
+      boxShadow: 24,
+      borderRadius: 2,
+    }}
+  >
+    <Typography variant="h6" mb={2}>
+      Add New Field
+    </Typography>
+    <TextField
+      label="Name"
+      value={newField.name}
+      onChange={(e) => handleNewFieldChange('name', e.target.value)}
+      fullWidth
+      sx={{ mb: 2 }}
+    />
+    <TextField
+      label="Label"
+      value={newField.label}
+      onChange={(e) => handleNewFieldChange('label', e.target.value)}
+      fullWidth
+      sx={{ mb: 2 }}
+    />
+    <FormControl fullWidth sx={{ mb: 2 }}>
+      <InputLabel>Field Type</InputLabel>
+      <Select
+        value={newField.field_type}
+        onChange={(e) => handleNewFieldChange('field_type', e.target.value)}
+        size="small"
+      >
+        {fieldTypes.map((type, index) => (
+          <MenuItem key={index} value={type.id || type.name || type}>
+            {type.name || type.type || type}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+
+    <TextField
+      label="Options"
+      value={newField.options}
+      onChange={(e) => handleNewFieldChange('options', e.target.value)}
+      fullWidth
+      sx={{ mb: 2 }}
+    />
+    <Button variant="contained" onClick={handleAddField} fullWidth disabled={operationLoading}>
+      {operationLoading ? <CircularProgress size={20} sx={{ color: 'inherit' }} /> : 'Add Field'}
+    </Button>
+  </Box>
+</Modal>
 
       <Modal
         open={editLabelModalOpen}
@@ -636,6 +644,7 @@ const EditDoctype = ({ app, doctype }) => {
 
 
     </Box>
+  </>
   );
 };
 

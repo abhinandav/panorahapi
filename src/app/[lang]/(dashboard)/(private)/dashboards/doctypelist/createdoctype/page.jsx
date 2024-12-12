@@ -29,6 +29,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import BackButton from '../BackButton';
 
 const CreateDoctype = () => {
   const router = useRouter();
@@ -52,6 +53,7 @@ const CreateDoctype = () => {
     fields: [{ name: '', field_type: 'Data', label: '', permlevel: 0, options: null }],
   });
 
+
   const fetchApps = async () => {
     setLoading(true);
     try {
@@ -66,6 +68,8 @@ const CreateDoctype = () => {
       
       if (response.data && Array.isArray(response.data.result)) {
         setApps(response.data.result);
+        console.log("fetching apps");
+        
       } else {
         throw new Error('API response is not in the expected format');
       }
@@ -77,26 +81,30 @@ const CreateDoctype = () => {
     }
   };
 
-  const fetch_datatypes = async () => {
-    try {
-      const response = await axios.post(`${selectedServer}/execute`, { fn: 'display_all_field_types' },
-        {
-          headers: {
-            Authorization: `Bearer ${bearerToken}`,
-          },
+  useEffect(()=>{
+    const fetch_datatypes = async () => {
+      try {
+        const response = await axios.post(`${selectedServer}/execute`, { fn: 'display_all_field_types' },
+          {
+            headers: {
+              Authorization: `Bearer ${bearerToken}`,
+            },
+          }
+        );
+        if (response.data && Array.isArray(response.data.result)) {
+          setFieldType(response.data.result);
+          console.log("fetching datatypes");   
+        } else {
+          throw new Error('API response is not in the expected format');
         }
-      );
-      if (response.data && Array.isArray(response.data.result)) {
-        setFieldType(response.data.result);
-      } else {
-        throw new Error('API response is not in the expected format');
+      } catch (err) {
+        setError(err.message || 'Error fetching apps');
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError(err.message || 'Error fetching apps');
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+    fetch_datatypes()
+  },[])
 
   useEffect(() => {
     if (!selectedServer) {
@@ -105,8 +113,7 @@ const CreateDoctype = () => {
       return;
     }
     fetchApps();
-    fetch_datatypes();
-  }, [selectedServer,bearerToken]);
+  }, [selectedServer]);
 
 
 
@@ -174,6 +181,7 @@ const CreateDoctype = () => {
 
   return (
     <>
+      <BackButton route={"/dashboards/doctypelist"} />
       <Backdrop open={loading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <CircularProgress color="inherit" />
       </Backdrop>

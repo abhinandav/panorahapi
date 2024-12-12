@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  servers: ['http://127.0.0.1:8001/', 'http://127.0.0.1:8000/',"https://api.panorah.com/"],
+  servers: ['http://127.0.0.1:8001/',"https://api.panorah.com/", "https://prodapi.panorah.com/", 'http://127.0.0.1:8000/',],
   selectedServer: null, 
 };
 

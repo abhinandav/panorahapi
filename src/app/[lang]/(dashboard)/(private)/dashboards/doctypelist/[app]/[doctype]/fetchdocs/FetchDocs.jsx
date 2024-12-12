@@ -5,22 +5,18 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { useRouter } from 'next/navigation';
 import {
   Card,
   CardHeader,
   CardContent,
-  TextField,
-  Button,
-  Grid,
-  IconButton,
   Snackbar,
   Alert,
   Backdrop,
   CircularProgress,
 } from '@mui/material';
 import DataTable from './DataTable';
+import BackButton from '../../../BackButton';
 
 const FetchData = ({app,doctype}) => {
   const [tableName, setTableName] = useState('');
@@ -31,6 +27,7 @@ const FetchData = ({app,doctype}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showError, setShowError] = useState(false);
+  const router = useRouter();
 
   const server = useSelector((state) => state.server.selectedServer);
   const bearerToken  = localStorage.getItem('authToken')
@@ -44,7 +41,7 @@ const FetchData = ({app,doctype}) => {
         console.log('working');
         
       const response = await axios.post(
-        `${server}doctype/fetch/${doctype}`,
+        `${server}doctype/${app}/${doctype}/fetch`,
         { condition_dict: conditionDict },
         {
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${bearerToken}` },
@@ -74,6 +71,7 @@ const FetchData = ({app,doctype}) => {
 
   return (
     <>
+      <BackButton route={`/dashboards/doctypelist/${app}/${doctype}`} />
       <Backdrop open={loading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <CircularProgress color="inherit" />
       </Backdrop>
