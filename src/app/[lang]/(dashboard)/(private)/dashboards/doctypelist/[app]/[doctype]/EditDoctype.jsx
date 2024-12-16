@@ -62,27 +62,26 @@ const EditDoctype = ({ app, doctype }) => {
   const server = useSelector((state) => state.server.selectedServer);
   const bearerToken = localStorage.getItem('authToken');
 
-
+  const fetchMetadata = async () => {
+    try {
+      const response = await axios.get(`${server}doctype/${app}/${doctype}/getjson`, {
+        headers: {
+          Authorization: `Bearer ${bearerToken}`,
+        },
+      });
+      const metadata = response.data;
+      setForm({
+        ...metadata,
+        fields: metadata.data.fields || [],
+      });
+    } catch (err) {
+      setError('Failed to fetch metadata.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(()=>{
-    const fetchMetadata = async () => {
-      try {
-        const response = await axios.get(`${server}doctype/${app}/${doctype}/getjson`, {
-          headers: {
-            Authorization: `Bearer ${bearerToken}`,
-          },
-        });
-        const metadata = response.data;
-        setForm({
-          ...metadata,
-          fields: metadata.data.fields || [],
-        });
-      } catch (err) {
-        setError('Failed to fetch metadata.');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchMetadata()
   },[server])
 
@@ -417,56 +416,52 @@ const EditDoctype = ({ app, doctype }) => {
               <TableCell>Label</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Field Type</TableCell>
-              {/* <TableCell>Perm Level</TableCell> */}
               <TableCell>Options</TableCell>
               <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {form.fields.map((field, index) => (
-              <TableRow key={index}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>
-                  <TextField
-                    value={field.label}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  <TextField
-                    value={field.name}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  <TextField
-                    value={field.field_type || 'Data'}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  <TextField
-                    value={field.options || ''}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  <IconButton onClick={(e) => handleMenuOpen(e, index)}>
-                    <MoreVertIcon />
-                  </IconButton>
-                  <Menu
-                    anchorEl={menuAnchorEl}
-                    open={Boolean(menuAnchorEl) && selectedFieldIndex === index}
-                    onClose={handleMenuClose}
-                  >
-                    <MenuItem onClick={handleDeleteField}>Delete</MenuItem>
-                    <MenuItem onClick={handleEditLabel}>Edit Label</MenuItem>
-                    <MenuItem onClick={handleChangeOrder}>Change Order</MenuItem>
-                  </Menu>
-                </TableCell>
-              </TableRow>
-            ))}
+              {form?.fields?.length > 0 ? (
+                form.fields.map((field, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>
+                      <TextField value={field.label} size="small" />
+                    </TableCell>
+                    <TableCell>
+                      <TextField value={field.name} size="small" />
+                    </TableCell>
+                    <TableCell>
+                      <TextField value={field.field_type || 'Data'} size="small" />
+                    </TableCell>
+                    <TableCell>
+                      <TextField value={field.options || ''} size="small" />
+                    </TableCell>
+                    <TableCell>
+                      <IconButton onClick={(e) => handleMenuOpen(e, index)}>
+                        <MoreVertIcon />
+                      </IconButton>
+                      <Menu
+                        anchorEl={menuAnchorEl}
+                        open={Boolean(menuAnchorEl) && selectedFieldIndex === index}
+                        onClose={handleMenuClose}
+                      >
+                        <MenuItem onClick={handleDeleteField}>Delete</MenuItem>
+                        <MenuItem onClick={handleEditLabel}>Edit Label</MenuItem>
+                        <MenuItem onClick={handleChangeOrder}>Change Order</MenuItem>
+                      </Menu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={6} align="center">
+                    No fields available.
+                  </TableCell>
+                </TableRow>
+              )}
           </TableBody>
+
         </Table>
       </TableContainer>
 

@@ -47,10 +47,15 @@ const FetchData = ({app,doctype}) => {
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${bearerToken}` },
         }
       );
+      console.log(response.data.data?.doc_data || []);
+      
 
       if (response.data.status === 'Success') {
-        const fetchedData = response.data.data[0]?.fetched_data || [];
+        const fetchedData = response.data.data?.doc_data || [];
         setData(fetchedData);
+        console.log(fetchedData);
+        
+
         if (fetchedData.length > 0) {
           setColumns(Object.keys(fetchedData[0])); 
         }
