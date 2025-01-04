@@ -17,7 +17,7 @@ import {
 import BackButton from '../../../BackButton';
 
 const InsertField = ({ app, doctype }) => {
-  const server = useSelector((state) => state.server.selectedServer);
+  const server  = localStorage.getItem('server')
   const bearerToken = localStorage.getItem('authToken');
 
   const [loading, setLoading] = useState(false);
@@ -82,6 +82,8 @@ const InsertField = ({ app, doctype }) => {
         }
       );
 
+      console.log(response.data);
+      
       if (response.data.status === 'Success') {
         alert('Data inserted successfully!');
       }
@@ -128,6 +130,33 @@ const InsertField = ({ app, doctype }) => {
   return (
     <>
       <BackButton route={`/dashboards/doctypelist/${app}/${doctype}`} />
+
+      <Grid container spacing={2} alignItems="center" sx={{ marginBottom: '24px',marginTop: '24px' }}>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label="App Name"
+              name="app_name"
+              value={app}
+              InputProps={{
+                readOnly: true,
+              }}
+              required
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label="Table Name"
+              name="table_name"
+              value={doctype}
+              InputProps={{
+                readOnly: true,
+              }}
+              required
+            />
+          </Grid>
+        </Grid>
 
       <form onSubmit={handleSubmit} style={{ marginTop: 40 }}>
         <Grid container spacing={2}>

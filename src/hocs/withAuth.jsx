@@ -4,6 +4,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Lottie from 'lottie-react';
+import Loader from '@/app/[lang]/(dashboard)/(private)/dashboards/loader';
+import animationData from '../../public/loadbar.json'
 
 
 
@@ -13,27 +16,49 @@ const AuthGuard = ({ children }) => {
   
     useEffect(() => {
       const checkAuthentication = async () => {
-        const token = localStorage.getItem('authToken'); // Retrieve token from localStorage
-  
-        if (!token) {
-          router.push('/login'); // Redirect to login if no token
-          return setIsAuthenticated(false);
-        }
+      const storedToken = localStorage.getItem('authToken'); // Get token from localStorage
 
-        setIsAuthenticated(true);
-  
+      if (!storedToken) {
+        setIsAuthenticated(false);
+        router.push('/login');
+        return;
+      }
+      try {
+        const { exp } = JSON.parse(atob(storedToken.split('.')[1]));
+        console.log(Date.now(),exp);
+        
+        if (Date.now() >= exp * 1000) {
+          throw new Error('Token expired');
+        }
+      } catch (error) {
+        console.error('Token validation failed:', error);
+        localStorage.removeItem('authToken');
+        setIsAuthenticated(false);
+        router.push('/login');
+      }
+
+      setIsAuthenticated(true);
       };
   
       checkAuthentication();
     }, [router]);
   
-    // Show a loading state while verifying authentication
     if (isAuthenticated === null) {
-      return <div>Loading...</div>; // Replace with a spinner or fallback UI
+      return (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '100vh',
+          }}
+        >
+          <Lottie animationData={animationData} style={{ height: 300, width: 300 }} />
+        </div>
+      );
     }
   
-    // Render children if authenticated
-    return <>{isAuthenticated && children}</>;
+      return <>{isAuthenticated && children}</>;
   };
   
   export default AuthGuard;

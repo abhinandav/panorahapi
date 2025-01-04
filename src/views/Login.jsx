@@ -4,12 +4,12 @@
 
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@configs/firebaseconfig'
+import { auth } from '@configs/firebaseconfig';
 import { useRouter } from 'next/navigation';
-
 
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import { Box, Select, MenuItem } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -18,37 +18,62 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Divider from '@mui/material/Divider';
 import Alert from '@mui/material/Alert';
 
-import Link from 'next/link';
-
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [isPasswordShown, setIsPasswordShown] = useState(false);
+  const [selectedServer, setSelectedServer] = useState('https://prodapi.panorah.com/');
   const router = useRouter();
+
+  const defaultServers = [
+    'http://127.0.0.1:8001/',
+    'https://api.panorah.com/',
+    'https://prodapi.panorah.com/',
+    'http://127.0.0.1:8000/',
+  ];
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
+
+    localStorage.setItem('server', selectedServer); // Store selected server
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       const token = await user.getIdToken();
       console.log('Token:', token);
-      localStorage.setItem("authToken", token);
-      router.push(`/dashboards/doctypelist`);
+      localStorage.setItem('authToken', token); // Store token in localStorage
+      router.push(`/dashboards/doctypelist`); // Navigate to dashboard
     } catch (err) {
-      setError(err.message);
+      setError(err.message); // Display error message
     }
   };
 
   const handleClickShowPassword = () => setIsPasswordShown((prev) => !prev);
 
+  const handleSelectServer = (value) => {
+    setSelectedServer(value);
+  };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', minHeight: '100vh', alignItems: 'center' }}>
-      <div style={{ width: '100%', maxWidth: 400, padding: '20px', borderRadius: '8px' }}>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        alignItems: 'center',
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          maxWidth: 400,
+          padding: '20px',
+          borderRadius: '8px',
+        }}
+      >
         <Typography variant="h4" align="center">
           Welcome to Panorah! 👋🏻
         </Typography>
@@ -56,9 +81,20 @@ const Login = () => {
           Please sign-in to your account to start the adventure.
         </Typography>
 
-        {error && <Alert severity="error" style={{ marginBottom: '20px' }}>{error}</Alert>}
+        {error && (
+          <Alert severity="error" style={{ marginBottom: '20px' }}>
+            {error}
+          </Alert>
+        )}
 
-        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <form
+          onSubmit={handleLogin}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
+          }}
+        >
           <TextField
             fullWidth
             label="Email"
@@ -86,48 +122,29 @@ const Login = () => {
               ),
             }}
           />
-          <FormControlLabel
-            control={<Checkbox defaultChecked />}
-            label="Remember me"
-          />
+
+          <Divider>Choose Server</Divider>
+
+          <Box sx={{ paddingTop: '10px', width: '100%' }}>
+            <Select
+              value={selectedServer}
+              onChange={(e) => handleSelectServer(e.target.value)}
+              variant="outlined"
+              displayEmpty
+              fullWidth
+            >
+              {defaultServers.map((server, index) => (
+                <MenuItem key={index} value={server}>
+                  {server}
+                </MenuItem>
+              ))}
+            </Select>
+          </Box>
+
           <Button fullWidth variant="contained" type="submit">
             Login
           </Button>
         </form>
-
-        <div style={{ textAlign: 'center', margin: '16px 0' }}>
-          <Typography>
-            Forgot password?{' '}
-            <Link href="/forgot-password" passHref>
-              <Typography component="span" color="primary">
-                Click here
-              </Typography>
-            </Link>
-          </Typography>
-        </div>
-
-        <Divider>or</Divider>
-
-        <Button
-          color="secondary"
-          fullWidth
-          style={{ marginTop: '16px' }}
-          startIcon={<img src="/images/logos/google.png" alt="Google" width={22} />}
-          onClick={() => console.log('Google Login')} 
-        >
-          Sign in with Google
-        </Button>
-
-        <div style={{ textAlign: 'center', marginTop: '16px' }}>
-          <Typography>
-            New on our platform?{' '}
-            <Link href="/register" passHref>
-              <Typography component="span" color="primary">
-                Create an account
-              </Typography>
-            </Link>
-          </Typography>
-        </div>
       </div>
     </div>
   );

@@ -3,7 +3,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import {
@@ -14,6 +13,9 @@ import {
   Alert,
   Backdrop,
   CircularProgress,
+  Box,
+  Grid,
+  TextField,
 } from '@mui/material';
 import DataTable from './DataTable';
 import BackButton from '../../../BackButton';
@@ -29,7 +31,7 @@ const FetchData = ({app,doctype}) => {
   const [showError, setShowError] = useState(false);
   const router = useRouter();
 
-  const server = useSelector((state) => state.server.selectedServer);
+  const server  = localStorage.getItem('server')
   const bearerToken  = localStorage.getItem('authToken')
 
 
@@ -48,10 +50,8 @@ const FetchData = ({app,doctype}) => {
         }
       );
       console.log(response.data.data?.doc_data || []);
-      
-
       if (response.data.status === 'Success') {
-        const fetchedData = response.data.data?.doc_data || [];
+        const fetchedData = response.data.data;
         setData(fetchedData);
         console.log(fetchedData);
         
@@ -74,29 +74,58 @@ const FetchData = ({app,doctype}) => {
   },[server])
 
 
-  return (
+return (
     <>
       <BackButton route={`/dashboards/doctypelist/${app}/${doctype}`} />
+
       <Backdrop open={loading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <CircularProgress color="inherit" />
       </Backdrop>
 
-      <Snackbar open={showError} autoHideDuration={6000} onClose={handleCloseError}>
-        <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
-          {error}
-        </Alert>
-      </Snackbar>
+      <Box sx={{ padding: '16px' }}>
+        <Grid container spacing={2} alignItems="center" sx={{ marginBottom: '24px' }}>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label="App Name"
+              name="app_name"
+              value={app}
+              InputProps={{
+                readOnly: true,
+              }}
+              required
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label="Table Name"
+              name="table_name"
+              value={doctype}
+              InputProps={{
+                readOnly: true,
+              }}
+              required
+            />
+          </Grid>
+        </Grid>
 
-      <Card>
-        
-        {data.length > 0 ? (
-          <CardContent>
-            <DataTable app={app} doctype={doctype} data={data} setData={setData} columns={columns} tableName={tableName}/>
-          </CardContent>
-        ):(
-            <CardHeader title="Empty Table" subheader="Nothing here to show, Insert some dat first" />
-        )}
-      </Card>
+        <Snackbar open={showError} autoHideDuration={6000} onClose={handleCloseError}>
+          <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
+            {error}
+          </Alert>
+        </Snackbar>
+
+        <Card>
+          {data.length > 0 ? (
+            <CardContent>
+              <DataTable app={app} doctype={doctype} data={data} setData={setData} columns={columns} tableName={tableName} />
+            </CardContent>
+          ) : (
+            <CardHeader title="Empty Table" subheader="Nothing here to show, Insert some data first" />
+          )}
+        </Card>
+      </Box>
     </>
   );
 };

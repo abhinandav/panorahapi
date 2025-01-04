@@ -4,7 +4,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { useSelector } from 'react-redux';
 
 import {
   Box,
@@ -29,10 +28,8 @@ import {
   InputLabel
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Checkbox } from '@mui/material';
-import { patch } from '@mui/material';
 import BackButton from '../../BackButton';
 
 const EditDoctype = ({ app, doctype }) => {
@@ -59,7 +56,7 @@ const EditDoctype = ({ app, doctype }) => {
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [selectedFieldIndex, setSelectedFieldIndex] = useState(null);
 
-  const server = useSelector((state) => state.server.selectedServer);
+  const server  = localStorage.getItem('server')
   const bearerToken = localStorage.getItem('authToken');
 
   const fetchMetadata = async () => {

@@ -13,16 +13,14 @@ const ServerSelector = () => {
   const { servers, selectedServer } = useSelector((state) => state.server);
   const [newServer, setNewServer] = useState('');
 
-  // Handle adding a new server
   const handleAddServer = () => {
     if (newServer.trim() && !servers.includes(newServer.trim())) {
       dispatch(addServer(newServer.trim()));
-      dispatch(selectServer(newServer.trim())); // Automatically select the new server
+      dispatch(selectServer(newServer.trim())); 
       setNewServer('');
     }
   };
 
-  // Handle selecting a server
   const handleSelectServer = (server) => {
     dispatch(selectServer(server));
   };
@@ -53,7 +51,6 @@ const ServerSelector = () => {
         sx={{ flexGrow: 1 }}
       />
 
-      {/* Add server button */}
       <Button variant="contained" color="primary" onClick={handleAddServer}>
         Add
       </Button>

@@ -30,8 +30,8 @@ const DoctypeListComponent = ({ searchTerm }) => {
   const [showError, setShowError] = useState(false);
   const router = useRouter();
 
-  const server = useSelector((state) => state.server.selectedServer);
   const bearerToken  = localStorage.getItem('authToken')
+  const server  = localStorage.getItem('server')
   const fetchDoctypes = async () => {
     setLoading(true);
     console.log('workinggg');

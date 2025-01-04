@@ -6,8 +6,7 @@ import HeaderToken from './HeaderToken'
 const Footer = () => {
   return (
     <>
-    <HeaderServer/>
-    {/* <HeaderToken/> */}
+    {/* <HeaderServer/> */}
     <hr style={{marginTop:"10", color:"white"}}/>
     </>
   )

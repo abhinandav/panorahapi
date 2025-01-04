@@ -35,7 +35,7 @@ const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
   const [editRowData, setEditRowData] = useState(null);
   const [originalRowData, setOriginalRowData] = useState(null);
 
-  const server = useSelector((state) => state.server.selectedServer);
+  const server  = localStorage.getItem('server')
   const bearerToken  = localStorage.getItem('authToken')
 
 

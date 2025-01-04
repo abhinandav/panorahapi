@@ -40,7 +40,7 @@ const CreateDoctype = () => {
   const [fieldTypes,setFieldType] = useState([])
 
   
-  const selectedServer = useSelector((state) => state.server.selectedServer);
+  const server  = localStorage.getItem('server')
   const bearerToken  = localStorage.getItem('authToken')
 
   const [form, setForm] = useState({
@@ -57,7 +57,7 @@ const CreateDoctype = () => {
   const fetchApps = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(`${selectedServer}/execute`, { fn: 'get_apps' },
+      const response = await axios.post(`${server}/execute`, { fn: 'get_apps' },
         {
           headers: {
             Authorization: `Bearer ${bearerToken}`,
@@ -84,7 +84,7 @@ const CreateDoctype = () => {
   useEffect(()=>{
     const fetch_datatypes = async () => {
       try {
-        const response = await axios.post(`${selectedServer}/execute`, { fn: 'display_all_field_types' },
+        const response = await axios.post(`${server}/execute`, { fn: 'display_all_field_types' },
           {
             headers: {
               Authorization: `Bearer ${bearerToken}`,
@@ -107,13 +107,13 @@ const CreateDoctype = () => {
   },[])
 
   useEffect(() => {
-    if (!selectedServer) {
+    if (!server) {
       setError('No server selected!');
       setShowError(true);
       return;
     }
     fetchApps();
-  }, [selectedServer]);
+  }, [server]);
 
 
 
@@ -151,7 +151,7 @@ const CreateDoctype = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(`${selectedServer}/document`, form,
+      const response = await axios.post(`${server}/document`, form,
         {
           headers: {
             Authorization: `Bearer ${bearerToken}`,
