@@ -23,7 +23,6 @@ import {
   TextField,
 } from '@mui/material';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
 
 const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -35,9 +34,10 @@ const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
   const [editRowData, setEditRowData] = useState(null);
   const [originalRowData, setOriginalRowData] = useState(null);
 
-  const server  = localStorage.getItem('server')
-  const bearerToken  = localStorage.getItem('authToken')
+  const server = typeof window !== 'undefined' ? localStorage.getItem('server') || '' : '';
+  const bearerToken = typeof window !== 'undefined' ? localStorage.getItem('authToken') || '' : '';
 
+  const handleCloseError = () => setShowError(false);
 
   const handleSelectRow = (rowName) => {
     setSelectedRows((prevSelected) =>
@@ -54,10 +54,6 @@ const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
       setSelectedRows(data.map((row) => row.name));
     }
     setSelectAll(!selectAll);
-  };
-
-  const handleCloseError = () => {
-    setShowError(false);
   };
 
   const handleDelete = async () => {
@@ -91,29 +87,15 @@ const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
         throw new Error(response.data.message || 'Failed to delete rows.');
       }
     } catch (error) {
-      setError(error.message || 'Failed to delete rows.');
+      setError(error.response?.data?.message || error.message || 'Failed to delete rows.');
       setShowError(true);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEditClick = (row) => {
-    setOriginalRowData({ ...row }); 
-    setEditRowData({ ...row });
-    setOpenEditModal(true);
-  };
-
-  const handleEditChange = (field, value) => {
-    setEditRowData((prevData) => ({
-      ...prevData,
-      [field]: value,
-    }));
-  };
-
   const handleEditSubmit = async () => {
     setLoading(true);
-  
     try {
       const changedValues = Object.keys(editRowData).reduce((acc, key) => {
         if (editRowData[key] !== originalRowData[key]) {
@@ -121,46 +103,43 @@ const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
         }
         return acc;
       }, {});
-  
+
       if (Object.keys(changedValues).length === 0) {
         setError('No changes detected.');
         setShowError(true);
         setLoading(false);
         return;
       }
-  
+
       const payload = {
-        payload: changedValues, 
+        payload: changedValues,
         condition_dict: { name: originalRowData.name },
       };
-  
+
       const response = await axios.put(`${server}doctype/${app}/${doctype}/update`, payload, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${bearerToken}`,
         },
       });
-  
+
       if (response.data.status === 'Success') {
-        // Update only the specific row in the data array
         const updatedData = data.map((row) =>
           row.name === originalRowData.name ? { ...row, ...changedValues } : row
         );
-        setData(updatedData); // Update the state with the modified data
+        setData(updatedData);
         setOpenEditModal(false);
-        setEditRowData(null);
-        setOriginalRowData(null); // Clear the original row data
       } else {
         throw new Error(response.data.message || 'Failed to update row.');
       }
     } catch (error) {
-      setError(error.message || 'Failed to update row.');
+      setError(error.response?.data?.message || error.message || 'Failed to update row.');
       setShowError(true);
     } finally {
       setLoading(false);
     }
   };
-  
+
   if (data.length === 0) {
     return <Typography variant="h6">No data available.</Typography>;
   }
@@ -206,13 +185,17 @@ const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
                   />
                 </TableCell>
                 {columns.map((col) => (
-                  <TableCell key={col}>{row[col]}</TableCell>
+                  <TableCell key={col}>{row[col] || 'N/A'}</TableCell>
                 ))}
                 <TableCell>
                   <Button
                     variant="outlined"
                     color="primary"
-                    onClick={() => handleEditClick(row)}
+                    onClick={() => {
+                      setOriginalRowData(row);
+                      setEditRowData(row);
+                      setOpenEditModal(true);
+                    }}
                   >
                     Edit
                   </Button>
@@ -264,8 +247,10 @@ const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
             <TextField
               key={col}
               label={col}
-              value={editRowData ? editRowData[col] : ''}
-              onChange={(e) => handleEditChange(col, e.target.value)}
+              value={editRowData ? editRowData[col] || '' : ''}
+              onChange={(e) =>
+                setEditRowData((prev) => ({ ...prev, [col]: e.target.value }))
+              }
               fullWidth
               margin="normal"
             />

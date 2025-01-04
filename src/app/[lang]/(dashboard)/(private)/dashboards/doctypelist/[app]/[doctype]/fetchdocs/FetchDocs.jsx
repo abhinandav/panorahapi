@@ -20,7 +20,7 @@ import {
 import DataTable from './DataTable';
 import BackButton from '../../../BackButton';
 
-const FetchData = ({app,doctype}) => {
+const FetchData = ({ app, doctype }) => {
   const [tableName, setTableName] = useState('');
   const [data, setData] = useState([]);
   const [conditionEntries, setConditionEntries] = useState([{ key: '', value: '' }]);
@@ -31,17 +31,14 @@ const FetchData = ({app,doctype}) => {
   const [showError, setShowError] = useState(false);
   const router = useRouter();
 
-  const server  = localStorage.getItem('server')
-  const bearerToken  = localStorage.getItem('authToken')
-
-
+  const server = typeof window !== 'undefined' ? localStorage.getItem('server') || '' : '';
+  const bearerToken = typeof window !== 'undefined' ? localStorage.getItem('authToken') || '' : '';
 
   const handleCloseError = () => setShowError(false);
 
-  const fetchTabledata = async (e) => {
+  const fetchTabledata = async () => {
+    setLoading(true);
     try {
-        console.log('working');
-        
       const response = await axios.post(
         `${server}doctype/${app}/${doctype}/fetch`,
         { condition_dict: conditionDict },
@@ -49,32 +46,33 @@ const FetchData = ({app,doctype}) => {
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${bearerToken}` },
         }
       );
-      console.log(response.data.data?.doc_data || []);
-      if (response.data.status === 'Success') {
-        const fetchedData = response.data.data;
-        setData(fetchedData);
-        console.log(fetchedData);
-        
 
+      if (response.data.status === 'Success') {
+        const fetchedData = response.data?.data;
+        setData(fetchedData);
         if (fetchedData.length > 0) {
-          setColumns(Object.keys(fetchedData[0])); 
+          setColumns(Object.keys(fetchedData[0]));
+        } else {
+          setColumns([]);
         }
       } else {
         throw new Error(response.data.message || 'Failed to fetch data');
       }
     } catch (error) {
-      setError(error.message || 'Error fetching data');
+      setError(error.response?.data?.message || error.message || 'Error fetching data');
       setShowError(true);
     } finally {
       setLoading(false);
     }
   };
-  useEffect(()=>{
-    fetchTabledata()
-  },[server])
 
+  useEffect(() => {
+    if (server && bearerToken) {
+      fetchTabledata();
+    }
+  }, [server, bearerToken]);
 
-return (
+  return (
     <>
       <BackButton route={`/dashboards/doctypelist/${app}/${doctype}`} />
 
@@ -119,7 +117,14 @@ return (
         <Card>
           {data.length > 0 ? (
             <CardContent>
-              <DataTable app={app} doctype={doctype} data={data} setData={setData} columns={columns} tableName={tableName} />
+              <DataTable
+                app={app}
+                doctype={doctype}
+                data={data}
+                setData={setData}
+                columns={columns}
+                tableName={tableName}
+              />
             </CardContent>
           ) : (
             <CardHeader title="Empty Table" subheader="Nothing here to show, Insert some data first" />
