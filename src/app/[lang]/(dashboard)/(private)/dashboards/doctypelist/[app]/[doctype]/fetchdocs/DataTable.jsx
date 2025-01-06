@@ -24,7 +24,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 
-const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
+const DataTable = ({ app, doctype, data, setData, columns }) => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -39,11 +39,11 @@ const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
 
   const handleCloseError = () => setShowError(false);
 
-  const handleSelectRow = (rowName) => {
+  const handleSelectRow = (rowKey) => {
     setSelectedRows((prevSelected) =>
-      prevSelected.includes(rowName)
-        ? prevSelected.filter((name) => name !== rowName)
-        : [...prevSelected, rowName]
+      prevSelected.includes(rowKey)
+        ? prevSelected.filter((key) => key !== rowKey)
+        : [...prevSelected, rowKey]
     );
   };
 
@@ -51,7 +51,7 @@ const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
     if (selectAll) {
       setSelectedRows([]);
     } else {
-      setSelectedRows(data.map((row) => row.name));
+      setSelectedRows(data.map((row) => row.name ?? row.id)); 
     }
     setSelectAll(!selectAll);
   };
@@ -65,12 +65,7 @@ const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
 
     setLoading(true);
     try {
-      const payload = {
-        table_name: tableName,
-        payload: {
-          name: selectedRows,
-        },
-      };
+      const payload = { payload: { name: selectedRows } };
 
       const response = await axios.post(`${server}doctype/${app}/${doctype}/delete`, payload, {
         headers: {
@@ -104,10 +99,9 @@ const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
         return acc;
       }, {});
 
-      if (Object.keys(changedValues).length === 0) {
+      if (!Object.keys(changedValues).length) {
         setError('No changes detected.');
         setShowError(true);
-        setLoading(false);
         return;
       }
 
@@ -144,6 +138,15 @@ const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
     return <Typography variant="h6">No data available.</Typography>;
   }
 
+  const filterObjectColumns = (columns, data) => {
+    return columns.filter((col) =>
+      data.every((row) => typeof row[col] !== 'object' || row[col] === null)
+    );
+  };
+  const filteredColumns = filterObjectColumns(columns, data);
+
+  
+
   return (
     <Box>
       <Backdrop open={loading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -169,7 +172,7 @@ const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
                   }
                 />
               </TableCell>
-              {columns.map((col) => (
+              {filteredColumns.map((col) => (
                 <TableCell key={col}>{col}</TableCell>
               ))}
               <TableCell>Actions</TableCell>
@@ -177,15 +180,17 @@ const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
           </TableHead>
           <TableBody>
             {data.map((row, rowIndex) => (
-              <TableRow key={rowIndex}>
+              <TableRow key={row.name ?? rowIndex}>
                 <TableCell>
                   <Checkbox
-                    checked={selectedRows.includes(row.name)}
-                    onChange={() => handleSelectRow(row.name)}
+                    checked={selectedRows.includes(row.name ?? rowIndex)}
+                    onChange={() => handleSelectRow(row.name ?? rowIndex)}
                   />
                 </TableCell>
-                {columns.map((col) => (
-                  <TableCell key={col}>{row[col] || 'N/A'}</TableCell>
+                {filteredColumns.map((col) => (
+                  <TableCell key={`${col}-${rowIndex}`}>
+                    {row[col] ?? 'N/A'}
+                  </TableCell>
                 ))}
                 <TableCell>
                   <Button
@@ -203,6 +208,7 @@ const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
               </TableRow>
             ))}
           </TableBody>
+
         </Table>
       </TableContainer>
 
@@ -245,7 +251,7 @@ const DataTable = ({ app, doctype, data, setData, columns, tableName }) => {
           </Typography>
           {columns.map((col) => (
             <TextField
-              key={col}
+              key={`${col}-edit`}
               label={col}
               value={editRowData ? editRowData[col] || '' : ''}
               onChange={(e) =>

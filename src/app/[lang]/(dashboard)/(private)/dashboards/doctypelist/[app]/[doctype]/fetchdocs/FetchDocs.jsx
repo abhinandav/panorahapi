@@ -21,7 +21,6 @@ import DataTable from './DataTable';
 import BackButton from '../../../BackButton';
 
 const FetchData = ({ app, doctype }) => {
-  const [tableName, setTableName] = useState('');
   const [data, setData] = useState([]);
   const [conditionEntries, setConditionEntries] = useState([{ key: '', value: '' }]);
   const [conditionDict, setConditionDict] = useState({});
@@ -32,6 +31,7 @@ const FetchData = ({ app, doctype }) => {
   const router = useRouter();
 
   const server = typeof window !== 'undefined' ? localStorage.getItem('server') || '' : '';
+  const normalizedServer = server.endsWith('/') ? server : `${server}/`;
   const bearerToken = typeof window !== 'undefined' ? localStorage.getItem('authToken') || '' : '';
 
   const handleCloseError = () => setShowError(false);
@@ -40,37 +40,47 @@ const FetchData = ({ app, doctype }) => {
     setLoading(true);
     try {
       const response = await axios.post(
-        `${server}doctype/${app}/${doctype}/fetch`,
+        `${normalizedServer}doctype/${app}/${doctype}/fetch`,
         { condition_dict: conditionDict },
         {
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${bearerToken}` },
         }
       );
 
+      console.log(response.data.data);
+
+
       if (response.data.status === 'Success') {
         const fetchedData = response.data?.data;
-        setData(fetchedData);
-        if (fetchedData.length > 0) {
+        
+        if (Array.isArray(fetchedData) && fetchedData.length > 0) {
           setColumns(Object.keys(fetchedData[0]));
         } else {
           setColumns([]);
         }
+        setData(Array.isArray(fetchedData) ? fetchedData : []);
       } else {
         throw new Error(response.data.message || 'Failed to fetch data');
       }
-    } catch (error) {
-      setError(error.response?.data?.message || error.message || 'Error fetching data');
+    }
+    catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        'An unknown error occurred while fetching data.';
+      setError(errorMessage);
       setShowError(true);
-    } finally {
+    }    
+    finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (server && bearerToken) {
+    if (server && bearerToken) {      
       fetchTabledata();
     }
-  }, [server, bearerToken]);
+  }, []);
 
   return (
     <>
@@ -108,7 +118,7 @@ const FetchData = ({ app, doctype }) => {
           </Grid>
         </Grid>
 
-        <Snackbar open={showError} autoHideDuration={6000} onClose={handleCloseError}>
+        <Snackbar open={showError} autoHideDuration={10000} onClose={handleCloseError}>
           <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
             {error}
           </Alert>
@@ -123,7 +133,6 @@ const FetchData = ({ app, doctype }) => {
                 data={data}
                 setData={setData}
                 columns={columns}
-                tableName={tableName}
               />
             </CardContent>
           ) : (
