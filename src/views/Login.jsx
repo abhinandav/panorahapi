@@ -6,6 +6,8 @@ import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@configs/firebaseconfig';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
+
 
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -27,29 +29,35 @@ const Login = () => {
   const router = useRouter();
 
   const defaultServers = [
+    'http://127.0.0.1:8000/',
     'http://127.0.0.1:8001/',
     'https://api.panorah.com/',
     'https://prodapi.panorah.com/',
-    'http://127.0.0.1:8000/',
   ];
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError(null);
 
-    localStorage.setItem('server', selectedServer); // Store selected server
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setError(null);
 
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      const token = await user.getIdToken();
-      console.log('Token:', token);
-      localStorage.setItem('authToken', token); // Store token in localStorage
-      router.push(`/dashboards/doctypelist`); // Navigate to dashboard
-    } catch (err) {
-      setError(err.message); // Display error message
-    }
-  };
+        localStorage.setItem('server', selectedServer);
+
+        try {
+            const response = await axios.post(`${selectedServer}auth/jwt/login`, {
+                email: email,
+                password: password,
+            });
+
+            const { accessToken } = response.data.data;
+
+            console.log('Access Token:', accessToken);
+            localStorage.setItem('authToken', accessToken); 
+            router.push('/dashboards/doctypelist'); 
+        } catch (err) {
+            setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+        }
+    };
+
 
   const handleClickShowPassword = () => setIsPasswordShown((prev) => !prev);
 
