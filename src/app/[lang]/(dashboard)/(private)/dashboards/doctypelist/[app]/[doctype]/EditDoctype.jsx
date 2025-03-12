@@ -59,11 +59,16 @@ const EditDoctype = ({ app, doctype }) => {
   const server  = localStorage.getItem('server')
   const bearerToken = localStorage.getItem('authToken');
 
+  
+
   const fetchMetadata = async () => {
+  console.log(bearerToken);
+
     try {
-      const response = await axios.get(`${server}doctype/${app}/${doctype}/getjson`, {
+      const response = await axios.get(`${server}doctype/getjson`, {
+        params: { doctype },  
         headers: {
-          Authorization: `Bearer ${bearerToken}`,
+          Authorization: `Bearer ${bearerToken}`,  
         },
       });
       const metadata = response.data;
@@ -170,13 +175,12 @@ const EditDoctype = ({ app, doctype }) => {
   };
 
 
-
   // remove field
   const handleRemoveRow = async (index) => {
     setLoading(true);
     try {
       const fieldToDelete = form.fields[index];
-      const payload = { table_name: doctype, column_name: fieldToDelete.name };
+      const payload = { table_name: doctype, column_name: fieldToDelete.fieldname };
       await axios.put(`${server}/alter/table/delete`, payload, {
         headers: {
           Authorization: `Bearer ${bearerToken}`,
@@ -215,7 +219,7 @@ const EditDoctype = ({ app, doctype }) => {
 
     const payload= { 
       table_name: doctype, 
-      current_column: form.fields[selectedFieldIndex].name, 
+      current_column: form.fields[selectedFieldIndex].fieldname, 
       new_label: editedLabel 
     }
 
@@ -254,12 +258,12 @@ const EditDoctype = ({ app, doctype }) => {
     try {
       const selectedField = form.fields[selectedFieldIndex];
       const payload = {
-        field_name: selectedField.name,
+        field_name: selectedField.fieldname,
         order: newOrder,
       };
   
       await axios.put(
-        `${server}/doctype/${app}/${doctype}/update/order`,
+        `${server}doctype/update/order?doctype=${doctype}`,
         payload,
         {
           headers: {
@@ -286,7 +290,7 @@ const EditDoctype = ({ app, doctype }) => {
     }
     setDeleteLoading(true);
     try {
-      const response = await axios.delete(`${server}/document/delete`,
+      const response = await axios.delete(`${server}document/delete`,
         {
           headers: {
             Authorization: `Bearer ${bearerToken}`,
@@ -426,10 +430,10 @@ const EditDoctype = ({ app, doctype }) => {
                       <TextField value={field.label} size="small" />
                     </TableCell>
                     <TableCell>
-                      <TextField value={field.name} size="small" />
+                      <TextField value={field.fieldname} size="small" />
                     </TableCell>
                     <TableCell>
-                      <TextField value={field.field_type || 'Data'} size="small" />
+                      <TextField value={field.fieldtype || 'Data'} size="small" />
                     </TableCell>
                     <TableCell>
                       <TextField value={field.options || ''} size="small" />

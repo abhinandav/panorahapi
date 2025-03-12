@@ -29,7 +29,7 @@ const InsertField = ({ app, doctype }) => {
   // Fetch the metadata (columns of the table)
   const fetchMetadata = async () => {
     try {
-      const response = await axios.get(`${server}doctype/${app}/${doctype}/getjson`, {
+      const response = await axios.get(`${server}doctype/getjson?doctype=${doctype}`, {
         headers: { Authorization: `Bearer ${bearerToken}` },
       });
   
@@ -38,9 +38,9 @@ const InsertField = ({ app, doctype }) => {
   
         // Filter out unnecessary fields and map the remaining fields
         const fields = response.data.data.fields
-          .filter((field) => !excludedFields.includes(field.name)) // Exclude unwanted fields
+          .filter((field) => !excludedFields.includes(field.fieldname)) // Exclude unwanted fields
           .map((field) => ({
-            key: field.name, // Column name
+            key: field.fieldname, // Column name
             value: '',       // Default empty value
           }));
   
@@ -75,7 +75,7 @@ const InsertField = ({ app, doctype }) => {
       }, {});
 
       const response = await axios.post(
-        `${server}/doctype/${app}/${doctype}/insert`,
+        `${server}doctype/insert?doctype=${doctype}`,
         { payload },
         {
           headers: { Authorization: `Bearer ${bearerToken}` },

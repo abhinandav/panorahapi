@@ -22,7 +22,6 @@ import BackButton from '../../../BackButton';
 
 const FetchData = ({ app, doctype }) => {
   const [data, setData] = useState([]);
-  const [conditionEntries, setConditionEntries] = useState([{ key: '', value: '' }]);
   const [conditionDict, setConditionDict] = useState({});
   const [columns, setColumns] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -40,7 +39,7 @@ const FetchData = ({ app, doctype }) => {
     setLoading(true);
     try {
       const response = await axios.post(
-        `${normalizedServer}doctype/${app}/${doctype}/fetch`,
+        `${normalizedServer}doctype/fetch?doctype=${doctype}`,
         { condition_dict: conditionDict },
         {
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${bearerToken}` },
@@ -48,7 +47,6 @@ const FetchData = ({ app, doctype }) => {
       );
 
       console.log(response.data.data);
-
 
       if (response.data.status === 'Success') {
         const fetchedData = response.data?.data;

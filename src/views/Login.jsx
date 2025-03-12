@@ -25,7 +25,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [isPasswordShown, setIsPasswordShown] = useState(false);
-  const [selectedServer, setSelectedServer] = useState('https://prodapi.panorah.com/');
+  const [selectedServer, setSelectedServer] = useState('https://api.panorah.com/');
   const router = useRouter();
 
   const defaultServers = [

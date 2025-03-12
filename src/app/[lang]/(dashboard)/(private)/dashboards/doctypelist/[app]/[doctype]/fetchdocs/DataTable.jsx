@@ -67,7 +67,7 @@ const DataTable = ({ app, doctype, data, setData, columns }) => {
     try {
       const payload = { payload: { name: selectedRows } };
 
-      const response = await axios.post(`${server}doctype/${app}/${doctype}/delete`, payload, {
+      const response = await axios.post(`${server}doctype/delete?doctype=${doctype}`, payload, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${bearerToken}`,
@@ -110,7 +110,7 @@ const DataTable = ({ app, doctype, data, setData, columns }) => {
         condition_dict: { name: originalRowData.name },
       };
 
-      const response = await axios.put(`${server}doctype/${app}/${doctype}/update`, payload, {
+      const response = await axios.put(`${server}doctype/update?doctype=${doctype}`, payload, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${bearerToken}`,
